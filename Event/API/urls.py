@@ -4,7 +4,9 @@ from rest_framework.authtoken.views import obtain_auth_token
 urlpatterns=[
              path('contest-list',views.ContestViewSet.as_view()),
              path('contest-list/<int:pk>',views.ContestList.as_view()),
-
+             
+             path('contest-lists',views.contestForUser),
+          
              path('domain-list',views.DomainViewSet.as_view()),
              path('domain-list/<int:pk>',views.DomainList.as_view()),
 

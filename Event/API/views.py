@@ -32,16 +32,20 @@ class paticipentList(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=UserSerializer
     permission_classes=[IsHeadCoordinator]
 
-class ContestViewSet(generics.ListCreateAPIView):
+class ContestViewSet(generics.ListAPIView):
     queryset=contest.objects.all()
     serializer_class=ContestItemSerializer
-    permission_classes=[IsAuthenticated]
     def list(self, request):
         queryset = self.get_queryset()
         serializer = ContestItemSerializer(queryset, many=True)
         return Response(serializer.data)
     def get_queryset(self):
         return contest.objects.all()
+    
+class ContestCreate(generics.CreateAPIView):
+    queryset=contest.objects.all()
+    serializer_class=ContestItemSerializer
+    permission_classes=[IsHeadCoordinator]
     def create(self, request, *args, **kwargs):
        if request.user.groups.filter(name="Coordinator").exists():
           serializers=ContestItemSerializer(data=request.data)
@@ -50,7 +54,6 @@ class ContestViewSet(generics.ListCreateAPIView):
             return Response(serializers.data,status=status.HTTP_201_CREATED) 
           return Response(status=status.HTTP_400_BAD_REQUEST) 
        return Response(status=status.HTTP_403_FORBIDDEN) 
-
 class ContestList(generics.RetrieveUpdateDestroyAPIView):
     queryset=contest.objects.all()
     serializer_class=ContestItemSerializer
@@ -65,8 +68,10 @@ class DomainViewSet(generics.ListCreateAPIView):
         queryset = self.get_queryset()
         serializer = DomainSerializer(queryset, many=True)
         return Response(serializer.data)
+        
     def get_queryset(self):
         return Domain.objects.all()
+        
     def create(self, request, *args, **kwargs):
         if request.user.groups.filter(name="HEADCORDINATOR").exists():
          serializers=DomainSerializer(data=request.data)
@@ -76,6 +81,8 @@ class DomainViewSet(generics.ListCreateAPIView):
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
         return super().create(request, *args, **kwargs)
+        
+        
 class DomainList(generics.RetrieveUpdateDestroyAPIView):
     queryset=Domain.objects.all()
     serializer_class=DomainSerializer
@@ -156,6 +163,7 @@ class HEADList(generics.RetrieveUpdateDestroyAPIView):
 
 
 ''' <<<<<             co-ordt   CRUD                       >>>>>   '''
+
 class CoordViewSet(generics.ListCreateAPIView):
     queryset=co_ordinator.objects.all()
     serializer_class=CoOrdSerializer
@@ -196,3 +204,22 @@ def Profile_view(profile,method,data):
        return Response({"message":"you are not authenticate to this operations"},status=status.HTTP_403_FORBIDDEN) 
     
 '''profiler creating after the  user is created'''
+
+class ContestForUser(generics.ListAPIView):
+    queryset=contest.objects.all()
+    serializer_class=EventforUserSerializer
+    def list(self):
+        queryset = self.get_queryset()
+        serializer = EventforUserSerializer(queryset, many=True)
+        return Response(serializer.data)
+    def get_queryset(self):
+        return contest.objects.all()
+
+
+
+@api_view(["GET"])
+@permission_classes([])
+def contestForUser(request):
+    queryset=contest.objects.all()
+    serializer_item=EventforUserSerializer(queryset, many=True)
+    return Response(serializer_item.data,status=status.HTTP_200_OK)

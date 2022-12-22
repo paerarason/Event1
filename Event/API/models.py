@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_delete,post_save
 from django.dispatch import receiver
 from django.db.models import signals
+from time import timezone
 class co_ordinator(models.Model):
     organizer=models.OneToOneField(User,related_name='organizer',on_delete=models.CASCADE)
     is_approved=models.BooleanField(default=False)

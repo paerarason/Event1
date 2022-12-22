@@ -49,8 +49,12 @@ class ProfileSerializer(serializers.ModelSerializer):
     fields=['id','user','bio']
     
 
-    
-
+class EventforUserSerializer(serializers.ModelSerializer):
+   coord=CoOrdSerializer(read_only=True)
+   domain=DomainSerializer(read_only=True)
+   class Meta:
+     model=contest 
+     fields=['id','name','coord','domain','team_size','price','entry_price','domain','start','end']
 
 
 
