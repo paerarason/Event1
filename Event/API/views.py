@@ -47,13 +47,12 @@ class ContestCreate(generics.CreateAPIView):
     serializer_class=ContestItemSerializer
     permission_classes=[IsHeadCoordinator]
     def create(self, request, *args, **kwargs):
-       if request.user.groups.filter(name="Coordinator").exists():
           serializers=ContestItemSerializer(data=request.data)
           if serializers.is_valid():
             serializers.save()
             return Response(serializers.data,status=status.HTTP_201_CREATED) 
+          print(serializers.data)
           return Response(status=status.HTTP_400_BAD_REQUEST) 
-       return Response(status=status.HTTP_403_FORBIDDEN) 
 class ContestList(generics.RetrieveUpdateDestroyAPIView):
     queryset=contest.objects.all()
     serializer_class=ContestItemSerializer
@@ -63,7 +62,7 @@ class ContestList(generics.RetrieveUpdateDestroyAPIView):
 class DomainViewSet(generics.ListCreateAPIView):
     queryset=Domain.objects.all()
     serializer_class=DomainSerializer
-    permission_classes=[(IsAuthenticated |IsCoordinator | IsHeadCoordinator)]
+    permission_classes=[]
     def list(self, request):
         queryset = self.get_queryset()
         serializer = DomainSerializer(queryset, many=True)
@@ -202,9 +201,9 @@ def Profile_view(profile,method,data):
             serializer_item.save()
             return Response(serializer_item.data,status=status.HTTP_201_CREATED)
        return Response({"message":"you are not authenticate to this operations"},status=status.HTTP_403_FORBIDDEN) 
-    
-'''profiler creating after the  user is created'''
 
+     
+'''profiler creating after the  user is created'''
 class ContestForUser(generics.ListAPIView):
     queryset=contest.objects.all()
     serializer_class=EventforUserSerializer
@@ -215,11 +214,31 @@ class ContestForUser(generics.ListAPIView):
     def get_queryset(self):
         return contest.objects.all()
 
-
-
 @api_view(["GET"])
 @permission_classes([])
 def contestForUser(request):
     queryset=contest.objects.all()
     serializer_item=EventforUserSerializer(queryset, many=True)
     return Response(serializer_item.data,status=status.HTTP_200_OK)
+@api_view(["GET"])
+@permission_classes([])
+def contestent(request):
+    queryset=UserProfile.objects.all()
+    serializer_item=ProfileUserSerializer(queryset, many=True)
+    return Response(serializer_item.data,status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+@permission_classes([])
+def DOMAIN_CONTEST(request,pk):
+     try:
+        temp=Domain.objects.get(id=pk)
+     except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+     queryset=contest.objects.filter(domain=temp)
+     print(queryset)
+     if queryset!=None:
+       serializer_item=EventforUserSerializer(queryset, many=True)
+       return Response(serializer_item.data,status=status.HTTP_200_OK)
+     return Response(status=status.HTTP_400_BAD_REQUEST)
+     
+    

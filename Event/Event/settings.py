@@ -25,12 +25,12 @@ SECRET_KEY = 'django-insecure-uu4cl01!)_l)c5yj))m46%92$&_=ur6)2*se8qdz5@9q_*tq3c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [""]
 CORS_ALLOW_ALL_ORIGINS=["http://localhost:3000"]
 
 # Application definition
 
-INSTALLED_APPS = [
+INSTALLED_APPS = ["corsheaders",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,6 +45,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+        "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -72,8 +74,11 @@ DJOSER={
 }
 
 
-
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:9000",
+]
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 
@@ -116,8 +121,12 @@ WSGI_APPLICATION = 'Event.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'gUYJ29C5o8ZxGkhUoZ9r',
+        'HOST': 'containers-us-west-98.railway.app',
+        'PORT': '5921',
     }
 }
 

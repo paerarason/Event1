@@ -13,12 +13,12 @@ class co_ordinator(models.Model):
      
 class Profile(models.Model):
     user=models.OneToOneField(User,related_name='user',on_delete=models.CASCADE)
-    bio=models.TextField(max_length=150,default="hey lets start my EVENT HUNT")
+    bio=models.TextField(max_length=150,default="HII iam a cocordinator ")
     def __str__(self) -> str:
         return self.user.username 
+
 class Domain(models.Model):
-    domain_name=models.CharField(max_length=30)
-    
+    domain_name=models.CharField(max_length=30)  
     def __str__(self) -> str:
         return self.domain_name
 
@@ -37,8 +37,8 @@ class contest(models.Model):
     entry_price=models.IntegerField()
     participent=models.ManyToManyField(User,related_name="participent")
     domain=models.ForeignKey(Domain,related_name="Domain",on_delete=models.CASCADE,null=True)
-    start=models.DateTimeField(auto_now_add=True)
-    end=models.DateTimeField(auto_now_add=True)
+    start=models.DateTimeField(auto_now_add=True )
+    duration_in_hrs=models.FloatField()
     location=models.ForeignKey(venue,related_name="Venue",null=True,on_delete=models.SET_NULL)
     def __str__(self) -> str:
         return self.name
@@ -59,7 +59,9 @@ class head_cordinator(models.Model):
 class Expro(models.Model):
     DOMAIN=models.ManyToManyField(Domain,related_name='DOMAIN',blank=True)
 
-
-@receiver(signals.post_save, sender=Profile) 
-def create_product(sender, instance, created, **kwargs):
-    print("Save method is called")
+class UserProfile(models.Model):
+    user=models.OneToOneField(User,related_name='userProfile',on_delete=models.CASCADE)
+    bio=models.TextField(max_length=150,default="hey lets start my EVENT HUNT")
+    contest=models.ManyToManyField(contest,related_name='user',blank=True)
+    def __str__(self) -> str:
+        return self.user.username

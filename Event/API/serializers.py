@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import *
+from time import timezone
+from datetime import datetime
 class DomainSerializer(serializers.ModelSerializer):
    class Meta: 
      model=Domain
@@ -19,10 +21,11 @@ class ContestItemSerializer(serializers.ModelSerializer):
    coord=CoOrdSerializer(read_only=True)
    domain=DomainSerializer(read_only=True)
    participent=UserSerializer(many=True,read_only=True)
+
+   start=serializers.DateTimeField(read_only=True)
    class Meta:
      model=contest 
-     fields=['id','name','co_ord','coord','domain','team_size','price','entry_price','participent','domain','start','end']
-
+     fields=['id','name','coord','team_size','price','entry_price','participent','domain','duration_in_hrs','start']
 class ApprovalSerializer(serializers.ModelSerializer):
   by=UserSerializer(many=True,read_only=True)
   event=ContestItemSerializer(read_only=True)
@@ -52,32 +55,27 @@ class ProfileSerializer(serializers.ModelSerializer):
 class EventforUserSerializer(serializers.ModelSerializer):
    coord=CoOrdSerializer(read_only=True)
    domain=DomainSerializer(read_only=True)
+   team_size=serializers.IntegerField(min_value=1)
+   start=serializers.DateTimeField()
+   def validate(self, attrs):
+     d1=attrs['start']
+     if d1.date()>datetime.now():
+       raise serializers.ValidationError
    class Meta:
      model=contest 
-     fields=['id','name','coord','domain','team_size','price','entry_price','domain','start','end']
+     fields='__all__'
+     '''['id','name','coord','domain','team_size','price','entry_price','start']'''
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+class ProfileUserSerializer(serializers.ModelSerializer):
+  user=UserSerializer(read_only=True)
+  contests=ContestItemSerializer(read_only=True)
+  class Meta:
+     model=UserProfile
+     fields=['user','bio','contests']
 
 class HeadItemSerializer(serializers.ModelSerializer):
     model=head_cordinator
     head=UserSerializer
-    request=ApprovalSerializer
-    fields=['id','head','request']
+    class Meta:
+     request=ApprovalSerializer
+     fields=['id','head','request']
